@@ -43,9 +43,9 @@ object CalendarUtil {
     }
 
 
-    fun getSemesterStart(currentDate: LocalDate?) = getCurrentSemesterStart(currentDate)
+    fun getSemesterStart(currentDate: LocalDate? = null) = getCurrentSemesterStart(currentDate)
 
-    fun getSemesterEnd(currentDate: LocalDate?) = getDaysInWeek(
+    fun getSemesterEnd(currentDate: LocalDate? = null) = getDaysInWeek(
         maxWeek, getCurrentSemesterStart(currentDate)
     ).last()
 

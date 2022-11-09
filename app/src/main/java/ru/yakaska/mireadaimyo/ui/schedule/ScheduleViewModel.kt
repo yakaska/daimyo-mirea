@@ -31,7 +31,7 @@ class ScheduleViewModel(
     private val groups = scheduleRepository.getAllGroups()
 
     init {
-        showSchedule(LocalDate.of(2022, Month.NOVEMBER, 19))
+        showSchedule(LocalDate.now())
     }
 
     fun showSchedule(date: LocalDate) {

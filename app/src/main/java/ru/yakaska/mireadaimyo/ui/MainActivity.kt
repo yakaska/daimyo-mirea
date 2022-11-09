@@ -21,6 +21,8 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.yakaska.mireadaimyo.data.model.Schedule.WeekdaySchedule.Lesson
+import ru.yakaska.mireadaimyo.ui.schedule.ScheduleList
+import ru.yakaska.mireadaimyo.ui.schedule.ScheduleScreen
 import ru.yakaska.mireadaimyo.ui.schedule.ScheduleViewModel
 import ru.yakaska.mireadaimyo.ui.theme.MireaScheduleTheme
 
@@ -39,67 +41,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     val uiState by scheduleViewModel.uiState.collectAsStateWithLifecycle()
-                    ScheduleList(daySchedule = uiState.schedule)
+                    ScheduleScreen(uiState)
                 }
             }
         }
     }
-
-    @Composable
-    fun ScheduleList(daySchedule: List<Lesson>, modifier: Modifier = Modifier) {
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = modifier
-        ) {
-            items(daySchedule) { lesson ->
-                ScheduleCard(lesson)
-            }
-        }
-    }
-
-    @Composable
-    fun ScheduleCard(
-        lesson: Lesson,
-        modifier: Modifier = Modifier,
-    ) {
-        Card(
-            shape = MaterialTheme.shapes.medium, modifier = modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxHeight()
-            ) {
-                Text(
-                    text = lesson.name,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                ScheduleCardLine(
-                    icon = Icons.Default.AccessTime,
-                    title = "${lesson.timeStart} - ${lesson.timeEnd}"
-                )
-                ScheduleCardLine(
-                    icon = Icons.Default.Place, title = lesson.rooms.joinToString()
-                )
-                ScheduleCardLine(
-                    icon = Icons.Default.Person, title = lesson.teachers.joinToString()
-                )
-                ScheduleCardLine(
-                    icon = Icons.Default.Info, title = lesson.types
-                )
-            }
-        }
-    }
-
-    @Composable
-    fun ScheduleCardLine(icon: ImageVector, title: String) {
-        Row {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-            Text(text = title, Modifier.padding(start = 8.dp))
-        }
-    }
-
 }
 
