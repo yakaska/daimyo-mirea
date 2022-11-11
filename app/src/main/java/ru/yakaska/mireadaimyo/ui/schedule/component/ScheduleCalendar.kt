@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.WeekDay
@@ -25,11 +26,8 @@ import java.util.*
 
 @Composable
 fun ScheduleCalendar(
-    selectedDate: LocalDate,
-    modifier: Modifier = Modifier,
-    onDayClick: (WeekDay) -> Unit
+    selectedDate: LocalDate, modifier: Modifier = Modifier, onDayClick: (WeekDay) -> Unit
 ) {
-
     val currentDate = remember { LocalDate.now() }
     val startDate = remember { CalendarUtil.getSemesterStart() }
     val endDate = remember { CalendarUtil.getSemesterEnd() }
@@ -41,20 +39,24 @@ fun ScheduleCalendar(
         firstDayOfWeek = daysOfWeek.first()
     )
 
-    Column {
-        DaysOfWeekTitle(daysOfWeek = daysOfWeek)
-        WeekCalendar(
-            state = state,
-            dayContent = { day ->
-                ScheduleDay(day, isSelected = selectedDate == day.date, isFocused = currentDate == day.date) {
-                    onDayClick(it)
-                }
-            })
-    }
+    WeekCalendar(
+        state = state,
+        modifier = modifier,
+        dayContent = { day ->
+            ScheduleDay(
+                day, isSelected = selectedDate == day.date, isFocused = currentDate == day.date
+            ) {
+                onDayClick(it)
+            }
+        },
+        weekHeader = {
+            CalendarHeader(daysOfWeek = daysOfWeek)
+        },
+    )
 }
 
 @Composable
-private fun DaysOfWeekTitle(daysOfWeek: List<DayOfWeek>) {
+private fun CalendarHeader(daysOfWeek: List<DayOfWeek>) {
     Row(modifier = Modifier.fillMaxWidth()) {
         for (dayOfWeek in daysOfWeek) {
             Text(
@@ -68,25 +70,26 @@ private fun DaysOfWeekTitle(daysOfWeek: List<DayOfWeek>) {
 
 @Composable
 private fun ScheduleDay(
-    day: WeekDay,
-    isSelected: Boolean,
-    isFocused: Boolean,
-    onDayClick: (WeekDay) -> Unit
+    day: WeekDay, isSelected: Boolean, isFocused: Boolean, onDayClick: (WeekDay) -> Unit
 ) {
     val color = when {
-        isSelected && isFocused -> MaterialTheme.colorScheme.secondary
-        isSelected -> MaterialTheme.colorScheme.surfaceTint
-        isFocused -> MaterialTheme.colorScheme.scrim
+        isSelected && isFocused -> MaterialTheme.colorScheme.primaryContainer
+        isSelected -> MaterialTheme.colorScheme.inversePrimary
+        isFocused -> MaterialTheme.colorScheme.primaryContainer
         else -> Color.Transparent
     }
     Box(
         modifier = Modifier
             .aspectRatio(1f)
+            .padding(8.dp)
             .clip(CircleShape)
-            .background(color)
+            .background(color = color)
             .clickable { onDayClick(day) },
         contentAlignment = Alignment.Center
     ) {
-        Text(text = day.date.dayOfMonth.toString())
+        Text(
+            text = day.date.dayOfMonth.toString(),
+            style = MaterialTheme.typography.labelLarge
+        )
     }
 }

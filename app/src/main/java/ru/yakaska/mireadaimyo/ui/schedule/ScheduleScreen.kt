@@ -8,32 +8,45 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.yakaska.mireadaimyo.R
 import ru.yakaska.mireadaimyo.data.model.Schedule.WeekdaySchedule.Lesson
 import ru.yakaska.mireadaimyo.ui.schedule.component.ScheduleCalendar
-import java.util.*
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
+@OptIn(ExperimentalLifecycleComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleScreen(scheduleViewModel: ScheduleViewModel, modifier: Modifier = Modifier) {
 
     val uiState by scheduleViewModel.uiState.collectAsStateWithLifecycle()
 
-    Column {
-        ScheduleCalendar(uiState.selectedDay) { scheduleViewModel.showSchedule(it.date) }
-        ScheduleList(daySchedule = uiState.schedule)
-    }
+    Scaffold(topBar = {
+        Column {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }, colors = TopAppBarDefaults.smallTopAppBarColors()
+            )
 
+        }
+    }) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
+            ScheduleCalendar(uiState.selectedDay) {
+                scheduleViewModel.showSchedule(it.date)
+            }
+            ScheduleList(daySchedule = uiState.schedule)
+        }
+    }
 }
 
 @Composable
@@ -74,15 +87,27 @@ fun ScheduleCard(
             ScheduleCardLine(
                 icon = Icons.Default.AccessTime, title = "${lesson.timeStart} - ${lesson.timeEnd}"
             )
-            ScheduleCardLine(
-                icon = Icons.Default.Place, title = lesson.rooms.joinToString()
-            )
-            ScheduleCardLine(
-                icon = Icons.Default.Person, title = lesson.teachers.joinToString()
-            )
-            ScheduleCardLine(
-                icon = Icons.Default.Info, title = lesson.types
-            )
+            if (lesson.rooms.isNotEmpty()) {
+                ScheduleCardLine(
+                    icon = Icons.Default.Place, title = lesson.rooms.joinToString()
+                )
+            }
+            if (lesson.teachers.isNotEmpty()) {
+                ScheduleCardLine(
+                    icon = Icons.Default.Person, title = lesson.teachers.joinToString()
+                )
+            }
+            val types = when (lesson.types) {
+                "пр" -> "Практика"
+                "лк" -> "Лекция"
+                "лаб" -> "Лабораторная"
+                else -> ""
+            }
+            if (types.isNotEmpty()) {
+                ScheduleCardLine(
+                    icon = Icons.Default.Info, title = types
+                )
+            }
         }
     }
 }
@@ -90,7 +115,7 @@ fun ScheduleCard(
 @Composable
 fun ScheduleCardLine(icon: ImageVector, title: String) {
     Row {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.surfaceTint)
         Text(text = title, Modifier.padding(start = 8.dp))
     }
 }

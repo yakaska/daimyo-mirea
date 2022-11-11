@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.yakaska.mireadaimyo.ui.schedule.ScheduleScreen
 import ru.yakaska.mireadaimyo.ui.schedule.ScheduleViewModel
-import ru.yakaska.mireadaimyo.ui.theme.MireaScheduleTheme
+import ru.yakaska.mireadaimyo.ui.theme.MireaDaimyoTheme
 
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MireaScheduleTheme {
+            MireaDaimyoTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
