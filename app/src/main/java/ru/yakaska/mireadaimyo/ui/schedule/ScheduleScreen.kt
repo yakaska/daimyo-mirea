@@ -13,90 +13,42 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.kizitonwose.calendar.compose.WeekCalendar
-import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
-import com.kizitonwose.calendar.core.WeekDay
-import com.kizitonwose.calendar.core.daysOfWeek
-import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.yakaska.mireadaimyo.data.model.Schedule.WeekdaySchedule.Lesson
-import ru.yakaska.mireadaimyo.util.CalendarUtil
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.Year
-import java.time.YearMonth
-import java.time.format.TextStyle
+import ru.yakaska.mireadaimyo.ui.schedule.component.ScheduleCalendar
 import java.util.*
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun ScheduleScreen(uiState: ScheduleUiState, modifier: Modifier = Modifier) {
+fun ScheduleScreen(scheduleViewModel: ScheduleViewModel, modifier: Modifier = Modifier) {
+
+    val uiState by scheduleViewModel.uiState.collectAsStateWithLifecycle()
 
     Column {
-        ScheduleCalendar(uiState.currentDay)
-        ScheduleList(uiState.schedule)
+        ScheduleCalendar(uiState.selectedDay) { scheduleViewModel.showSchedule(it.date) }
+        ScheduleList(daySchedule = uiState.schedule)
     }
 
-}
-
-@Composable
-fun ScheduleCalendar(weekDay: Int, modifier: Modifier = Modifier) {
-    println("Weekday: $weekDay")
-    val currentDate = remember { LocalDate.now() }
-    val startDate = remember { CalendarUtil.getSemesterStart() } // Adjust as needed
-    val endDate = remember { CalendarUtil.getSemesterEnd() } // Adjust as needed
-    val daysOfWeek = remember { daysOfWeek(firstDayOfWeek = DayOfWeek.MONDAY) } // Available from the library
-
-    val state = rememberWeekCalendarState(
-        startDate = startDate,
-        endDate = endDate,
-        firstVisibleWeekDate = currentDate,
-        firstDayOfWeek = daysOfWeek.first()
-    )
-
-    Column {
-        DaysOfWeekTitle(daysOfWeek = daysOfWeek)
-        WeekCalendar(state = state, dayContent = { Day(it) })
-    }
-        
-}
-
-@Composable
-fun DaysOfWeekTitle(daysOfWeek: List<DayOfWeek>) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        for (dayOfWeek in daysOfWeek) {
-            Text(
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-            )
-        }
-    }
-}
-
-@Composable
-fun Day(day: WeekDay) {
-    Box(
-        modifier = Modifier.aspectRatio(1f), // This is important for square sizing!
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = day.date.dayOfMonth.toString())
-    }
 }
 
 @Composable
 fun ScheduleList(daySchedule: List<Lesson>, modifier: Modifier = Modifier) {
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-    ) {
-        items(daySchedule) { lesson ->
-            ScheduleCard(lesson)
+    if (daySchedule.isEmpty()) {
+        // TODO: сообщение, что расписания на сегодня нет
+    } else {
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier
+        ) {
+            items(daySchedule) { lesson ->
+                ScheduleCard(lesson)
+            }
         }
     }
 }
