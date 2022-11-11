@@ -26,7 +26,7 @@ class ScheduleViewModel(
     private val _uiState = MutableStateFlow(ScheduleUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val schedule = scheduleRepository.getSchedule("ИВБО-07-21")
+    private val schedule = scheduleRepository.getSchedule("КВБО-03-21")
 
     private val groups = scheduleRepository.getAllGroups()
 
@@ -35,7 +35,6 @@ class ScheduleViewModel(
     }
 
     fun showSchedule(date: LocalDate) {
-        // TODO: get day and week from selected date
         val day = date.dayOfWeek.value - 1
         val week = CalendarUtil.getCurrentWeek(date)
         if (day == 6) {

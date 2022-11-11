@@ -77,7 +77,8 @@ fun ScheduleCard(
         Column(
             modifier = Modifier
                 .padding(8.dp)
-                .fillMaxHeight()
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
                 text = lesson.name,
@@ -99,7 +100,7 @@ fun ScheduleCard(
             }
             val types = when (lesson.types) {
                 "пр" -> "Практика"
-                "лк" -> "Лекция"
+                "лк", "лек" -> "Лекция"
                 "лаб" -> "Лабораторная"
                 else -> ""
             }
